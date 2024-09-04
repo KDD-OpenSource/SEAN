@@ -79,8 +79,8 @@ class sean():
                 else:
                     raise Exception("unknown baggingstyle")
                 self.mats.append(mat)
-                x_=np.dot(x_,mat)
-                tx_=np.dot(tx_,mat)
+                x_=np.matmul(x_,mat)
+                tx_=np.matmul(tx_,mat)
 
             if self.mixed_features:
                 uss=np.arange(2*(len(feats)//2))
