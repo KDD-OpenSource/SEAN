@@ -6,7 +6,7 @@ import time
 
 #slightly modified version of sean storing all weights
 class sean():
-    def __init__(self, normalize=True,submodels=100,subsample=0.2,subsample_min=100,subsample_max=1000,featurebag=0.5,feature_min=5,feature_max=100, mixed_features=False, baggingstyle="mat"):
+    def __init__(self, normalize=True,submodels=100,subsample=0.2,subsample_min=100,subsample_max=1000,featurebag=0.5,feature_min=5,feature_max=100, mixed_features=False, baggingstyle="gauss"):
         self.normalize=normalize
         self.submodels=submodels
         self.subsample=subsample
@@ -64,10 +64,13 @@ class sean():
                 idx=np.random.choice(samples,ss,replace=False)
                 x_=x_[idx]
             if do_fb:
-                if self.baggingstyle=="mat":
+                if self.baggingstyle=="gauss":
+                    mat=np.random.normal(0,1,(features,fb))
+                    mat-=np.mean(mat,axis=0)
+                elif self.baggingstyle=="gaussnonorm":
                     mat=np.random.normal(0,1,(features,fb))
                 elif self.baggingstyle=="mixture":
-                    mat=np.random.randn(features,fb)>0
+                    mat=np.random.binomial(1, 0.5, 10).astype(bool)
                 elif self.baggingstyle=="reverse_classical":
                     mat=np.zeros((features,fb))
                     for i in range(features):
