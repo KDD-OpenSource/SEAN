@@ -6,7 +6,7 @@ import time
 
 #slightly modified version of sean storing all weights
 class sean():
-    def __init__(self, normalize=True,submodels=100,subsample=0.2,subsample_min=100,subsample_max=1000,featurebag=0.5,feature_min=5,feature_max=100, mixed_features=False, baggingstyle="gauss"):
+    def __init__(self, normalize=True,submodels=100,subsample=0.2,subsample_min=100,subsample_max=1000,featurebag=0.5,feature_min=5,feature_max=100, baggingstyle="gauss"):
         self.normalize=normalize
         self.submodels=submodels
         self.subsample=subsample
@@ -15,7 +15,6 @@ class sean():
         self.featurebag=featurebag
         self.feature_min=feature_min
         self.feature_max=feature_max
-        self.mixed_features=mixed_features
         self.baggingstyle=baggingstyle
 
 
@@ -70,7 +69,7 @@ class sean():
                 elif self.baggingstyle=="gaussnonorm":
                     mat=np.random.normal(0,1,(features,fb))
                 elif self.baggingstyle=="mixture":
-                    mat=np.random.binomial(1, 0.5, 10).astype(bool)
+                    mat=np.random.randn(features,fb)>0
                 elif self.baggingstyle=="reverse_classical":
                     mat=np.zeros((features,fb))
                     for i in range(features):
@@ -84,15 +83,6 @@ class sean():
                 self.mats.append(mat)
                 x_=np.matmul(x_,mat)
                 tx_=np.matmul(tx_,mat)
-
-            if self.mixed_features:
-                uss=np.arange(2*(len(feats)//2))
-                np.random.shuffle(uss)
-                a=uss[:len(feats)//2]
-                b=uss[len(feats)//2:]
-                x_=np.concatenate([x_,x_[:,a]*x_[:,b]],axis=1)
-                tx_=np.concatenate([tx_,tx_[:,a]*tx_[:,b]],axis=1)
-
 
             y=np.ones(len(x_))
             coefficients, residuals, rank, s = np.linalg.lstsq(x_, y, rcond=None)
